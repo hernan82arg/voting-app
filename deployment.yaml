@@ -19,7 +19,7 @@ spec:
       containers:
         - name: voting-app
           imagePullPolicy: IfNotPresent
-          image: docker.io/library/app:0.0.1
+          image: ghcr.io/hernan82arg/voting-app:latest
           volumeMounts:
             - name: database
               mountPath: "/var/lib/voting-app/"
