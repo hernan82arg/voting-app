@@ -58,8 +58,8 @@ spec:
                 name: {{ include "votingApp.fullname" . }}-{{ include "votingApp.secretVersion" . }}
           env:
             {{- if .Values.votingApp.service.enabled }}
-            - name: PORT
-              value: "8080"
+            - name: DUMMY_ENV_VAR
+              value: {{ .Values.votingApp.config.DUMMY_ENV_VAR }}
             {{- end }}
           volumeMounts:
             - name: database
