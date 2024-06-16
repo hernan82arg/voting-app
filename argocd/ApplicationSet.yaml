@@ -31,7 +31,7 @@ spec:
             value: "sha-{{.head_sha}}"
           - name: "deployment.sha"
             value: "sha-{{.head_sha}}"
-      project: "voting-app"
+      project: "default"
       destination:
         server: https://kubernetes.default.svc
         namespace: staging
