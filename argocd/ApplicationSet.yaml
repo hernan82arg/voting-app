@@ -12,7 +12,7 @@ spec:
         # The GitHub organization or user.
         owner: hernan82arg
         # The Github repository
-        repo: https://github.com/hernan82arg/voting-app.git
+        repo: voting-app
         # Labels is used to filter the PRs that you want to target. (optional)
         labels:
         - staging
