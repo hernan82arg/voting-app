@@ -1,10 +1,15 @@
 name: Build and Publish Docker Images
 
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+  # Runs on any open, reopened, or new push to a pull request
   pull_request:
-    branches: [ "main" ]
+    types: [opened, reopened, synchronize]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
@@ -36,13 +41,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Determine Tag Name
+        run: |
+          if [[ ${{ github.ref }} == refs/pull/*/merge ]]; then
+            VERSION=${GITHUB_SHA}
+            echo "VERSION=sha-$VERSION" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build and Push Docker image
         uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0 # v5.3.0
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.context }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/${{ matrix.context }}:${{ env.VERSION }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new

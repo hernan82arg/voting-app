@@ -1,0 +1,41 @@
+votingApp:
+  # XXX: Set env vars that are common to all environments here. Use
+  # files in deploy/$env/values.yaml for any environment specific values.
+  image:
+    repository: ghcr.io/hernan82arg/voting-app
+    tag: latest
+    pullPolicy: Always
+
+  resources:
+    requests:
+      memory: 100M
+      cpu: 0.25
+    limits:
+      memory: 100M
+      cpu: 0.25
+
+  ingress:
+    enabled: false
+
+  config:
+    DUMMY_ENV_VAR: global-value
+
+  secrets:
+    DUMMY_SECRET: global-secret
+
+  service:
+    enabled: true
+    port: 30000
+
+  probes:
+    livenessHttpPath: /health
+    readinessHttpPath: /
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    cpuTarget: 70
+
+deployment:
+  sha: sha-45cbe1e498d240623d5b92684826e637eaf81e2e

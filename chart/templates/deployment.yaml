@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "votingApp.fullname" . }}
+  labels:
+    {{- include "votingApp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+spec:
+  {{- if eq .Values.votingApp.autoscaling.enabled false }}
+  replicas: 1
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "votingApp.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        {{- include "votingApp.labels" . | nindent 8 }}
+        app.kubernetes.io/component: app
+    spec:
+      {{- if .Values.votingApp.serviceAccount }}
+      serviceAccountName: {{ .Values.votingApp.serviceAccount }}
+      automountServiceAccountToken: true
+      {{- end }}
+      volumes:
+        - name: database
+          hostPath:
+            path: /opt/database
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ include "app.image" . }}"
+          imagePullPolicy: {{ .Values.votingApp.image.imagePullPolicy | quote }}
+          {{- if .Values.votingApp.service.enabled }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.votingApp.probes.livenessHttpPath }}
+              port: http
+            failureThreshold: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.votingApp.probes.readinessHttpPath }}
+              port: http
+          {{- end }}
+          resources:
+            {{- toYaml .Values.votingApp.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "votingApp.fullname" . }}-{{ include "votingApp.configVersion" . }}
+            - secretRef:
+                name: {{ include "votingApp.fullname" . }}-{{ include "votingApp.secretVersion" . }}
+          env:
+            {{- if .Values.votingApp.service.enabled }}
+            - name: DUMMY_ENV_VAR
+              value: {{ .Values.votingApp.config.DUMMY_ENV_VAR }}
+            {{- end }}
+          volumeMounts:
+            - name: database
+              mountPath: "/var/lib/voting-app/"

@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: voting-app
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  - pullRequest:
+      github:
+        # The GitHub organization or user.
+        owner: hernan82arg
+        # The Github repository
+        repo: voting-app
+        # Labels is used to filter the PRs that you want to target. (optional)
+        labels:
+        - staging
+      requeueAfterSeconds: 300
+  template:
+    metadata:
+      name: 'voting-app-{{.branch_slug}}-{{.number}}'
+    spec:
+      source:
+        repoURL: 'https://github.com/hernan82arg/voting-app.git'
+        targetRevision: '{{.head_sha}}'
+        path: chart/
+        helm:
+          parameters:
+          - name: "image.tag"
+            value: "sha-{{.head_sha}}"
+          - name: "deployment.sha"
+            value: "sha-{{.head_sha}}"
+      project: "default"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: staging
