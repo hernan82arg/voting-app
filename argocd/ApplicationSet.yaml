@@ -19,7 +19,7 @@ spec:
       requeueAfterSeconds: 60
   template:
     metadata:
-      name: 'voting-app-{{.branch}}-{{.number}}'
+      name: 'voting-app-{{.branch_slug}}-{{.number}}'
     spec:
       source:
         repoURL: 'https://github.com/hernan82arg/voting-app.git'
