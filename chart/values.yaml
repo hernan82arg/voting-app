@@ -26,6 +26,7 @@ votingApp:
   service:
     enabled: true
     port: 30000
+    type: NodePort
 
   probes:
     livenessHttpPath: /health

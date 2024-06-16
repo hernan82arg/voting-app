@@ -95,6 +95,10 @@
                         "port": {
                             "type": "number",
                             "description": "Expose service on this port."
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "Type of service."
                         }
                     }
                 },
