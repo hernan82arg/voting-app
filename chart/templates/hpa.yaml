@@ -1,0 +1,23 @@
+{{- if .Values.votingApp.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "votingApp.fullname" . }}
+  labels:
+    {{- include "votingApp.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "votingApp.fullname" . }}
+  minReplicas: {{ .Values.votingApp.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.votingApp.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.votingApp.autoscaling.cpuTarget }}
+{{- end }}
