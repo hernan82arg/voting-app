@@ -32,6 +32,10 @@ spec:
           - name: "deployment.sha"
             value: "sha-{{.head_sha}}"
       project: "default"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
       destination:
         server: https://kubernetes.default.svc
         namespace: staging
