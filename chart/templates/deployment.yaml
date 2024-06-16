@@ -29,9 +29,7 @@ spec:
             path: /opt/database
       containers:
         - name: {{ .Chart.Name }}
-          image:
-            repository: {{ .Values.votingApp.image.repository }}
-            tag: {{ .Values.votingApp.image.tag }}
+          image: "{{ include "app.image" . }}"
           imagePullPolicy: {{ .Values.votingApp.image.imagePullPolicy | quote }}
           {{- if .Values.votingApp.service.enabled }}
           ports:

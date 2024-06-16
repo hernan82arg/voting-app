@@ -87,3 +87,16 @@ File version hash. Used to create unique Secret.
 {{ .Values.votingApp.files | toYaml | sha256sum | trunc 5 }}
 {{- end -}}
 
+{{/*
+Create image name and tag used by the deployment.
+*/}}
+{{- define "app.image" -}}
+{{- $name := .Values.votingApp.image.repository -}}
+{{- if hasKey .Values.votingApp.image "version" -}}
+{{- printf "%s:%s" $name .Values.votingApp.image.version -}}
+{{- else if hasKey .Values.votingApp.image "tag" -}}
+{{- printf "%s:%s" $name .Values.votingApp.image.tag -}}
+{{- else -}}
+{{- printf "%s:%s" $name .Chart.AppVersion -}}
+{{- end -}}
+{{- end -}}
